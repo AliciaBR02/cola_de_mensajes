@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -Wall -Wextra -Werror
-
+BIN_FILES = servidor cliente
 
 all:
 .PHONY: all
@@ -12,6 +12,8 @@ cliente: cliente.c
 	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
-	rm -f servidor cliente servidor/data.txt
+	rm -f $(BIN_FILES) *.o
+
+.SUFFIXES:
 .PHONY: clean
 

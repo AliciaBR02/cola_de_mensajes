@@ -1,4 +1,4 @@
-/*el servidor almacena y gestiona las claves*/
+/*functions of the library claves.h*/
 
 // includes
 #include <stdio.h>
@@ -53,7 +53,7 @@ int exist(int key) {
     return 0;
 }
 
-int INSERT(int key, char *value1, int value2, double value3) {
+int insert_value(int key, char *value1, int value2, double value3) {
     sllist list = read_list_from_file();
     if (sllist_exist(&list, key))
         return -1;
@@ -63,7 +63,7 @@ int INSERT(int key, char *value1, int value2, double value3) {
     return 0;
 }
 
-int get(int key, char *value1, int *value2, double *value3) {
+int get_value(int key, char *value1, int *value2, double *value3) {
     // escribe los valores de la clave key en value1, value2 y value3
     sllist list = read_list_from_file();
     if (!sllist_exist(&list, key))
@@ -76,7 +76,7 @@ int get(int key, char *value1, int *value2, double *value3) {
     return 0;
 }
 
-int modify(int key, char *value1, int value2, double value3) {
+int modify_value(int key, char *value1, int value2, double value3) {
     sllist list = read_list_from_file();
     if (!sllist_exist(&list, key))
         return -1;
@@ -86,7 +86,7 @@ int modify(int key, char *value1, int value2, double value3) {
     return 0;
 }
 
-int delete(int key) {
+int delete_value(int key) {
     sllist list = read_list_from_file();
     if (!sllist_exist(&list, key))
         return -1;
@@ -98,7 +98,7 @@ int delete(int key) {
 
 
 
-int copy(int key1, int key2) {
+int copy_key(int key1, int key2) {
     // copiar key1 en key2 (tanto si key2 existe como si no)
     // si key1 no existe, return -1 y no hago nada
     sllist list = read_list_from_file();
@@ -113,14 +113,14 @@ int copy(int key1, int key2) {
 
 int main(void) {
     init();
-    set(1, "hola", 2, 3.0);
-    set(2, "adios", 3, 4.0);
-    modify(1, "plancha", 2, 5.0);
+    set_value(1, "hola", 2, 3.0);
+    set_value(2, "adios", 3, 4.0);
+    modify_value(1, "plancha", 2, 5.0);
     char value1[100];
     int value2;
     double value3;
-    get(1, value1, &value2, &value3);
+    get_value(1, value1, &value2, &value3);
     printf("%s %d %f", value1, value2, value3);
-    set(5, "palomitas", 10, 3.14);
-    copy(1, 5);
+    set_value(5, "palomitas", 10, 3.14);
+    copy_value(1, 5);
 }

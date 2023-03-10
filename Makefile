@@ -1,19 +1,22 @@
 CC = gcc
-CFLAGS = -g -Wall -Wextra -Werror
+CFLAGS = -lrt
+OBJS = servidor cliente
 BIN_FILES = servidor cliente
 
-all:
+all: $(OBJS)
 .PHONY: all
-
 servidor: servidor.c
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) -o $@.out $(CFLAGS) $^ 
 
 cliente: cliente.c
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) -o $@.out $(CFLAGS) $^
+
+libclaves: claves/claves.c
+	gcc -fPIC -c -o claves.o $^
+	gcc -shared -fPIC -o $@.so claves.o
 
 clean:
-	rm -f $(BIN_FILES) *.o
-
-.SUFFIXES:
+	rm -f $(BIN_FILES) *.out *.o *.so
 .PHONY: clean
+
 

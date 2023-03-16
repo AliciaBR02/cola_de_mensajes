@@ -7,6 +7,7 @@
 #include "claves/claves.h"
 
 int main(void) {
-    client_init();
+    int test1 = client_init();
+    int test2 = client_set_value(40, "probando", 8, 4.12);
     return 0;
 }

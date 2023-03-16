@@ -5,11 +5,11 @@
 #include "mensaje.h"
 #include <unistd.h>
 #include <pthread.h>
+#include <string.h>
 #include "operaciones/operaciones.h"
 
 mqd_t q_server;
 struct mq_attr attributes = {.mq_msgsize = sizeof(struct message), .mq_maxmsg = 10};
-char *server_queue_name = "/SERVIDOR";
 
 pthread_cond_t cond_message;
 pthread_mutex_t mutex_message;
@@ -18,14 +18,18 @@ int not_message_copied = 1;
 void process_message(struct message *msg) {
     mqd_t q_client;
     struct message msg_resp;
-
+    write(1, "Procesando mensaje\n", 19);
     pthread_mutex_lock(&mutex_message);
+    msg_resp = *msg;
     not_message_copied = 0;
     pthread_cond_signal(&cond_message);
     pthread_mutex_unlock(&mutex_message);
-
-    msg_resp = (*(struct message *)msg);
-
+    
+    dprintf(1, "client_q_name-> %s\n", msg_resp.client_queue_name);
+    dprintf(1, "recived_client_q_name-> %s\n", msg->client_queue_name);
+    dprintf(1, "value 1-> %s\n", msg_resp.value1);
+    dprintf(1, "op-> %d\n", msg_resp.op);
+    dprintf(1, "Test-> %ld\n", strlen(msg_resp.client_queue_name));
     switch (msg_resp.op) {
         case 1:
             msg_resp.res = init();
@@ -52,9 +56,16 @@ void process_message(struct message *msg) {
             msg_resp.res = -1;
             break;
     }
+    
     q_client = mq_open(msg_resp.client_queue_name, O_WRONLY);
+    if (q_client < 0) {
+        perror("mq_open(q_client)");
+        mq_close(q_server);
+    }
     if (mq_send(q_client, (const char *)&msg_resp, sizeof(msg_resp), 0) < 0) {
         perror("mq_send(q_client)");
+        mq_close(q_server);
+        mq_close(q_client);
     }
 }
 
@@ -62,7 +73,7 @@ int main(void) {
     pthread_t thread;
     pthread_attr_t attr;
 
-    if ((q_server = mq_open(server_queue_name, O_CREAT | O_RDONLY, 0700, &attributes)) < 0) {
+    if ((q_server = mq_open("/SERVIDOR", O_CREAT | O_RDONLY, 0700, &attributes)) < 0) {
         perror("mq_open(q_server)");
         return -1;
     }
@@ -76,10 +87,13 @@ int main(void) {
 
     while (1) {
         struct message msg;
-        if (mq_receive(q_server, (char *)&msg, sizeof(struct message), NULL) < 0) {
+        struct message *msg_ptr;
+        msg_ptr = &msg;
+        if (mq_receive(q_server, (char *)msg_ptr, sizeof(struct message), NULL) < 0) {
             perror("mq_receive(q_server)");
             return -1;
         }
+        dprintf(1, "alt-> %s\n", msg_ptr->client_queue_name);
         if (pthread_create(&thread, &attr, (void *)process_message, (void *)&msg) == 0) {
             pthread_mutex_lock(&mutex_message);
             while (not_message_copied == 1) {

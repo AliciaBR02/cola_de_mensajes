@@ -8,6 +8,4 @@
    int delete_value(int key);
    int exist(int key);
    int copy_key(int key1, int key2);
-   void write_list_to_file(sllist *list);
-   sllist read_list_from_file(void);
 #endif 

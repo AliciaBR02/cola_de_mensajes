@@ -10,6 +10,7 @@ struct message {
     int value2;
     double value3;
     int res;
+    char client_queue_name[MAX];
 };
 
 #endif

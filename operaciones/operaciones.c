@@ -5,7 +5,7 @@
 #include "sllist/sllist.h"
 
 void write_list_to_file(sllist *list) {
-    FILE *f = fopen("servidor/data.txt", "w");
+    FILE *f = fopen("data.txt", "w");
     sllist_node *node = list->head;
     while (node != NULL) {
         fprintf(f, "%d %s %d %f\n", node->key, node->value1, node->value2, node->value3);
@@ -15,7 +15,7 @@ void write_list_to_file(sllist *list) {
 }
 
 sllist read_list_from_file(void) {
-    FILE *f = fopen("servidor/data.txt", "r");
+    FILE *f = fopen("data.txt", "r");
     int key;
     char value1[100];
     int value2;
@@ -31,9 +31,9 @@ sllist read_list_from_file(void) {
 }
 
 int init() {
-    FILE *f = fopen("servidor/data.txt", "r");
+    FILE *f = fopen("data.txt", "r");
     if (f == NULL) {
-        f = fopen("servidor/data.txt", "w");
+        f = fopen("data.txt", "w");
         fclose(f);
     } else {
         fclose(f);

@@ -10,12 +10,15 @@
 mqd_t q_server;
 struct mq_attr attributes = {.mq_msgsize = sizeof(struct message), .mq_maxmsg = 10};
 char *server_queue_name = "/SERVIDOR";
+
 pthread_cond_t cond_message;
 pthread_mutex_t mutex_message;
 int not_message_copied = 1;
 
 void process_message(struct message *msg) {
+    mqd_t q_client;
     struct message msg_resp;
+
     pthread_mutex_lock(&mutex_message);
     not_message_copied = 0;
     pthread_cond_signal(&cond_message);
@@ -49,13 +52,13 @@ void process_message(struct message *msg) {
             msg_resp.res = -1;
             break;
     }
-    if (mq_send(q_server, (const char *)&msg_resp, sizeof(msg_resp), 0) < 0) {
-        perror("mq_send(q_server)");
+    q_client = mq_open(msg_resp.client_queue_name, O_WRONLY);
+    if (mq_send(q_client, (const char *)&msg_resp, sizeof(msg_resp), 0) < 0) {
+        perror("mq_send(q_client)");
     }
 }
 
 int main(void) {
-    struct message msg;
     pthread_t thread;
     pthread_attr_t attr;
 
@@ -66,9 +69,8 @@ int main(void) {
 
     pthread_mutex_init(&mutex_message, NULL);
     pthread_cond_init(&cond_message, NULL);
+
     pthread_attr_init(&attr);
-
-
     // attributes -> independent threads
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 

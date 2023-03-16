@@ -1,21 +1,8 @@
-/*functions of the library claves.h*/
-// recibo mensaje de la cola, mando cosas, etc
-// mensaje que sea lo más genérico para todas las llamadas
-// hay que usar respuestas en forma de estructuras
-// las colas solo soportan un tipo de datos
-// los hilos son detached
-
-// biblioteca dinamica .so es de linux exclusivamente
-// 
-
-// llo que hay aquí no está bien
-// includes
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../sllist/sllist.h"
+#include "sllist/sllist.h"
 
 void write_list_to_file(sllist *list) {
     FILE *f = fopen("servidor/data.txt", "w");
@@ -63,7 +50,7 @@ int exist(int key) {
     return 0;
 }
 
-int insert_value(int key, char *value1, int value2, double value3) {
+int set_value(int key, char *value1, int value2, double value3) {
     sllist list = read_list_from_file();
     if (sllist_exist(&list, key))
         return -1;
@@ -118,17 +105,3 @@ int copy_key(int key1, int key2) {
     sllist_destroy(&list);
     return 0;
 }
-
-/*int main(void) {
-    init();
-    set_value(1, "hola", 2, 3.0);
-    set_value(2, "adios", 3, 4.0);
-    modify_value(1, "plancha", 2, 5.0);
-    char value1[100];
-    int value2;
-    double value3;
-    get_value(1, value1, &value2, &value3);
-    printf("%s %d %f", value1, value2, value3);
-    set_value(5, "palomitas", 10, 3.14);
-    copy_value(1, 5);
-}*/

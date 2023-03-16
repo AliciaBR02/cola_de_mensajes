@@ -1,6 +1,6 @@
 #ifndef OPERACIONES_H
  #define OPERACIONES_H
-   #include "../sllist/sllist.h"
+   #include "sllist/sllist.h"
    int init();
    int set_value(int key, char *value1, int value2, double value3);
    int get_value(int key, char *value1, int *value2, double *value3);

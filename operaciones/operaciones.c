@@ -46,8 +46,8 @@ int exist(int key) {
     int result = sllist_exist(&list, key);
     sllist_destroy(&list);
     if (result)
-        return 1;
-    return 0;
+        return 0;
+    return -1;
 }
 
 int set_value(int key, char *value1, int value2, double value3) {
@@ -103,5 +103,27 @@ int copy_key(int key1, int key2) {
     sllist_set_value(&list, key2, node->value1, node->value2, node->value3);
     write_list_to_file(&list);
     sllist_destroy(&list);
+    return 0;
+}
+
+int main(void) {
+    init();
+    set_value(4, "pen", 3, 1.57);
+    copy_key(4, 6);
+    /*init();
+    set_value(1, "insert", 7, 4.12);
+    set_value(2, "computer", 4, 3.57);
+    set_value(3, "book", 5, 2.12);
+    set_value(4, "pen", 3, 1.57);
+    int test_exist1 = exist(1);
+    int test_exist2 = exist(2);
+    int test_exist3 = exist(3);
+    int test_exist4 = exist(4);
+    int test_exist5 = exist(5);
+    printf("Exist first element: %d \n\n", test_exist1);
+    printf("Exist second element: %d \n\n", test_exist2);
+    printf("Exist third element (should not): %d \n", test_exist3);
+    printf("Exist fourth element: %d \n\n", test_exist4);
+    printf("Exist fifth element (should not): %d \n", test_exist5);*/
     return 0;
 }

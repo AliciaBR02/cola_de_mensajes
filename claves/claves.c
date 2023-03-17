@@ -71,7 +71,7 @@ int client_init() {
 
 int client_set_value(int key, char *value1, int value2, double value3) {
     if (open_queues() == -1) {return -1;}
-
+    if (strlen(value1) > 256) {return -1;}
     struct message msg;
     msg.op = 2;
     msg.key = key;
@@ -97,6 +97,9 @@ int client_get_value(int key, char *value1, int *value2, double *value3) {
     msg.op = 3;
     msg.key = key;
     // punteros
+    msg.ptr1 = value1;
+    msg.ptr2 = value2;
+    msg.ptr3 = value3;
     strcpy(msg.client_queue_name, client_queue_name);
 
     if (send_message(&msg) < 0) { return -1;}

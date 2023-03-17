@@ -33,6 +33,7 @@ void process_message(struct message *msg) {
             msg_resp.res = set_value(msg_resp.key, msg_resp.value1, msg_resp.value2, msg_resp.value3);
             break;
         case 3:
+            dprintf(2, "value1 direction: %p", msg_resp.ptr1);
             msg_resp.res = get_value(msg_resp.key, msg_resp.value1, &msg_resp.value2, &msg_resp.value3);
             break;
         case 4:

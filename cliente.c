@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <mqueue.h>
 #include <stdio.h>
-
+#include <string.h>
 #include "claves/claves.h"
 
 int main(void) {
@@ -24,14 +24,15 @@ int main(void) {
     printf("Insert fourth element: %d \n\n", test_set_value4);
     
     // testing get_value
-    /*char value1[100];
+    char value1[256];
     int value2;
     double value3;
+    printf("direccion de value1: %p \n", value1);
     int test_get_value1 = client_get_value(1, value1, &value2, &value3);
     printf("Get first element: %d \n", test_get_value1);
-    printf("Value1: %s \n", value1);
+    printf("Value1: %ld \n", strlen(value1));
     printf("Value2: %d \n", value2);
-    printf("Value3: %f \n\n", value3);
+    printf("Value3: %f \n\n", value3);/*
     int test_get_value2 = client_get_value(2, value1, &value2, &value3);
     printf("Get second element: %d \n", test_get_value2);
     printf("Value1: %s \n", value1);
@@ -57,14 +58,13 @@ int main(void) {
     int test_exist3 = client_exist(3);
     int test_exist4 = client_exist(4);
     int test_exist5 = client_exist(8);
-    printf("Exist first element: %d \n\n", test_exist1);
-    printf("Exist second element: %d \n\n", test_exist2);
+    printf("Exist first element: %d \n", test_exist1);
+    printf("Exist second element: %d \n", test_exist2);
     printf("Exist third element (should not): %d \n", test_exist3);
-    printf("Exist fourth element: %d \n\n", test_exist4);
+    printf("Exist fourth element: %d \n", test_exist4);
     printf("Exist fifth element (should not): %d \n", test_exist5);
 
     // testing copy_key
-    // NOT OKAY
     int test_copy_key1 = client_copy_key(4, 6);
     printf("Copy third element to fourth element: %d \n", test_copy_key1);
 

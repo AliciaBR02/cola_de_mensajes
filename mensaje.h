@@ -9,6 +9,9 @@ struct message {
     char value1[MAX];
     int value2;
     double value3;
+    /*char *ptr1;
+    int *ptr2;
+    double *ptr3;*/
     int res;
     char client_queue_name[MAX];
 };

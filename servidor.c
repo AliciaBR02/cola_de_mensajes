@@ -18,18 +18,13 @@ int not_message_copied = 1;
 void process_message(struct message *msg) {
     mqd_t q_client;
     struct message msg_resp;
-    write(1, "Procesando mensaje\n", 19);
+
     pthread_mutex_lock(&mutex_message);
     msg_resp = *msg;
     not_message_copied = 0;
     pthread_cond_signal(&cond_message);
     pthread_mutex_unlock(&mutex_message);
     
-    dprintf(1, "client_q_name-> %s\n", msg_resp.client_queue_name);
-    dprintf(1, "recived_client_q_name-> %s\n", msg->client_queue_name);
-    dprintf(1, "value 1-> %s\n", msg_resp.value1);
-    dprintf(1, "op-> %d\n", msg_resp.op);
-    dprintf(1, "Test-> %ld\n", strlen(msg_resp.client_queue_name));
     switch (msg_resp.op) {
         case 1:
             msg_resp.res = init();
@@ -93,7 +88,6 @@ int main(void) {
             perror("mq_receive(q_server)");
             return -1;
         }
-        dprintf(1, "alt-> %s\n", msg_ptr->client_queue_name);
         if (pthread_create(&thread, &attr, (void *)process_message, (void *)&msg) == 0) {
             pthread_mutex_lock(&mutex_message);
             while (not_message_copied == 1) {

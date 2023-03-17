@@ -17,6 +17,12 @@ char client_queue_name[20];
 
 struct mq_attr attributes = {.mq_msgsize = sizeof(struct message), .mq_maxmsg = 10};
 // concat client pid to client queue name
+int check_value1(char *value1) {
+    if (strlen(value1) > 256 || sizeof(value1) > 256) {
+        return -1;
+    }
+    return 0;
+}
 
 int open_queues() {
     sprintf(client_queue_name, "/CLIENTE-%d", getpid());
@@ -51,16 +57,12 @@ int receive_message(struct message *msg) {
 }
 
 int client_init() {
-    if (open_queues() == -1) {
-        return -1;
-    }
+    if (open_queues() == -1) {return -1;}
+
     struct message msg;
-    msg.op = 5;
-    strcpy(msg.value1, "hola\0");
-    msg.value2 = 1;
-    // copy client queue name in message
-    
+    msg.op = 1;
     strcpy(msg.client_queue_name, client_queue_name);
+
     if (send_message(&msg) < 0) { return -1;}
     if (receive_message(&msg) < 0) { return -1; }
     
@@ -73,18 +75,17 @@ int client_init() {
 
 
 int client_set_value(int key, char *value1, int value2, double value3) {
-    if (open_queues() == -1) {
-        return -1;
-    }
+    if (open_queues() == -1) {return -1;}
+
+    if (check_value1(value1) == -1) {return -1;}
     struct message msg;
     msg.op = 2;
     msg.key = key;
     strcpy(msg.value1, value1);
     msg.value2 = value2;
-    msg.value3 = value3;
-    // copy client queue name in message
-    
+    msg.value3 = value3;    
     strcpy(msg.client_queue_name, client_queue_name);
+
     if (send_message(&msg) < 0) { return -1;}
     if (receive_message(&msg) < 0) { return -1; }
     
@@ -96,16 +97,19 @@ int client_set_value(int key, char *value1, int value2, double value3) {
 }
 
 int client_get_value(int key, char *value1, int *value2, double *value3) {
-    if (open_queues() == -1) {
-        return -1;
-    }
+    if (open_queues() == -1) {return -1;}
+
+    if (check_value1(value1) == -1) {return -1;}
+
     struct message msg;
     msg.op = 3;
     msg.key = key;
-    // los punteros a los valores se pasan por referencia
-    // copy client queue name in message
-    
+    /*char *ptr1 = value1;
+    msg.ptr1 = ptr1;
+    msg.ptr2 = value2;
+    msg.ptr3 = value3;*/
     strcpy(msg.client_queue_name, client_queue_name);
+
     if (send_message(&msg) < 0) { return -1;}
     if (receive_message(&msg) < 0) { return -1; }
     
@@ -117,18 +121,18 @@ int client_get_value(int key, char *value1, int *value2, double *value3) {
 }
 
 int client_modify_value(int key, char *value1, int value2, double value3) {
-    if (open_queues() == -1) {
-        return -1;
-    }
+    if (open_queues() == -1) {return -1;}
+
+    if (check_value1(value1) == -1) {return -1;}
+
     struct message msg;
     msg.op = 4;
     msg.key = key;
     strcpy(msg.value1, value1);
     msg.value2 = value2;
-    msg.value3 = value3;
-    // copy client queue name in message
-    
+    msg.value3 = value3;    
     strcpy(msg.client_queue_name, client_queue_name);
+
     if (send_message(&msg) < 0) { return -1;}
     if (receive_message(&msg) < 0) { return -1; }
     
@@ -140,15 +144,30 @@ int client_modify_value(int key, char *value1, int value2, double value3) {
 }
 
 int client_delete_value(int key) {
-    if (open_queues() == -1) {
-        return -1;
-    }
+    if (open_queues() == -1) {return -1;}
+
     struct message msg;
     msg.op = 5;
-    msg.key = key;
-    // copy client queue name in message
-    
+    msg.key = key;    
     strcpy(msg.client_queue_name, client_queue_name);
+
+    if (send_message(&msg) < 0) { return -1;}
+    if (receive_message(&msg) < 0) { return -1; }
+    
+    mq_close(q_server);
+    mq_close(q_client);
+    mq_unlink(client_queue_name);
+    
+    return msg.res;
+}
+
+int client_exist(int key) {
+    if (open_queues() == -1) {return -1;}
+
+    struct message msg;
+    msg.op = 6;
+    strcpy(msg.client_queue_name, client_queue_name);
+
     if (send_message(&msg) < 0) { return -1;}
     if (receive_message(&msg) < 0) { return -1; }
     
@@ -160,16 +179,14 @@ int client_delete_value(int key) {
 }
 
 int client_copy_key(int key1, int key2) {
-    if (open_queues() == -1) {
-        return -1;
-    }
+    if (open_queues() == -1) {return -1;}
+
     struct message msg;
-    msg.op = 5;
+    msg.op = 7;
     msg.key = key1;
     msg.key2 = key2;
-    // copy client queue name in message
-    
     strcpy(msg.client_queue_name, client_queue_name);
+
     if (send_message(&msg) < 0) { return -1;}
     if (receive_message(&msg) < 0) { return -1; }
     

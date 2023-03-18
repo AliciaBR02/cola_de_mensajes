@@ -5,6 +5,7 @@
 
 int init() {
     FILE *f = fopen("data.txt", "r");
+    // create the file if it does not exist
     if (f == NULL) {
         f = fopen("data.txt", "w");
         fclose(f);
@@ -27,10 +28,12 @@ int exist(int key) {
             return 0;
         }
     }
+    fclose(f);
+    return -1;
 }
 
 int set_value(int key, char *value1, int value2, double value3) {
-    // append the key, value1, value2 and value3 to the file
+    // append the key, value1, value2 and value3 at the end of the file
     if (exist(key) == 0)
         return -1;
     FILE *f = fopen("data.txt", "a");
@@ -40,14 +43,14 @@ int set_value(int key, char *value1, int value2, double value3) {
 }
 
 int get_value(int key, char *value1, int *value2, double *value3) {
-
     FILE *f = fopen("data.txt", "r");
-    // read the file line by line and check if the first number is key
+    // read the file line by line and check if the first number is the searched key
     int k;
-    char v1[100];
+    char v1[256];
     int v2;
     double v3;
     while (fscanf(f, "%d %s %d %lf", &k, v1, &v2, &v3) != EOF) {
+        // if we find the key, copy the values to the pointers and return 0
         if (k == key) {
             strcpy(value1, v1);
             *value2 = v2;
@@ -59,10 +62,8 @@ int get_value(int key, char *value1, int *value2, double *value3) {
     return -1;
 }
 
-
-
 int delete_value(int key) {
-    // borra la clave key del archivo
+    // we write on a temporal file the data except the key's tuple
     FILE *f = fopen("data.txt", "r");
     FILE *f2 = fopen("data2.txt", "w");
     int k;
@@ -74,49 +75,33 @@ int delete_value(int key) {
             fprintf(f2, "%d %s %d %lf\n", k, v1, v2, v3);
         }
     }
+    // then we rename the temporal file to data.txt
     fclose(f);
     fclose(f2);
     remove("data.txt");
     rename("data2.txt", "data.txt");
     return 0;
 }
+
 int modify_value(int key, char *value1, int value2, double value3) {
     int exists = exist(key);
     if (exists == -1)
         return -1;
+    // we delete the key and then we insert it again with the new data
     delete_value(key);
     set_value(key, value1, value2, value3);    
     return 0;
 }
+
 int copy_key(int key1, int key2) {
-    // copiar key1 en key2 (tanto si key2 existe como si no)
-    // si key1 no existe, return -1 y no hago nada
     int exists = exist(key1);
     if (exists == -1)
         return -1;
     char value1[256];
     int value2;
     double value3;
+    // we get the data of the key1 and then we insert it with the key2
     get_value(key1, value1, &value2, &value3);
     set_value(key2, value1, value2, value3);
     return 0;
 }
-/*
-int main(void) {
-    init();
-    int t = set_value(1, "insert", 7, 4.12);
-    printf("Set value: %d \n", t);
-    int s = modify_value(1, "modify", 8, 5.12);
-    printf("Modify value: %d \n", s);
-    char value1[100];
-    int value2;
-    double value3;
-    int r = get_value(1, value1, &value2, &value3);
-    printf("Get value: %d \n", r);
-    printf("Value1: %s \n", value1);
-    printf("Value2: %d \n", value2);
-    printf("Value3: %lf \n", value3);
-    int p = copy_key(1, 2);
-    printf("Copy key: %d \n", p);
-    return 0;
-}*/

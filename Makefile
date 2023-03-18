@@ -17,7 +17,7 @@ cliente: cliente.c libclaves.so
 	$(CC) -L. -lclaves $(CFLAGS) -o $@.out $< ./libclaves.so -lrt
 
 clean:
-	rm -f $(BIN_FILES) *.out *.o *.so $(CLAVES_PATH)/*.o
+	rm -f $(BIN_FILES) *.out *.o *.so $(CLAVES_PATH)/*.o data.txt
 
 re:	clean all
 
